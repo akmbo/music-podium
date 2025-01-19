@@ -68,7 +68,9 @@ const ListItemView = React.forwardRef<
       {...props}
       ref={ref}
     >
-      <p className="overflow-ellipsis text-nowrap flex-grow">{item.title}</p>
+      <p className="overflow-ellipsis text-nowrap flex-grow overflow-hidden max-w-full">
+        {item.title}
+      </p>
       <a href={item.url} target="_blank">
         <Button size="icon" variant="ghost">
           <Link />
