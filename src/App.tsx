@@ -10,9 +10,9 @@ function App() {
         <h1 className="text-4xl font-bold">Music Podium</h1>
       </div>
       <div className="flex place-items-center flex-col gap-4">
-        <ListItem className="w-[512px]" />
-        <ListItem className="w-[512px]" />
-        <ListItem className="w-[512px]" />
+        <ListItem className="w-[512px]" item={{ id: "1" }} />
+        <ListItem className="w-[512px]" item={{ id: "2" }} />
+        <ListItem className="w-[512px]" item={{ id: "3" }} />
         <Button className="flex gap-1 mt-6">
           <Plus />
           <span>Add</span>

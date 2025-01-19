@@ -3,22 +3,22 @@ import React, { useRef, useState } from "react"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Check, Edit, Link, Trash } from "lucide-react"
+import { Item } from "@/lib/types"
 
 type ListItemProps = {
-  title?: string
-  url?: string
+  item: Item
 }
 
 const ListItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & ListItemProps
->(({ title, url, className, ...props }, ref) => {
+>(({ item, className, ...props }, ref) => {
   const [isEditing, setIsEditing] = useState(true)
-  const [itemProps, setItemProps] = useState<ListItemProps>({ title, url })
+  const [itemProps, setItemProps] = useState<ListItemProps>({ item })
 
-  function handleSave(title: undefined | string, url: undefined | string) {
+  function handleSave(item: Item) {
     setIsEditing(false)
-    setItemProps({ title, url })
+    setItemProps({ item })
   }
 
   return (
@@ -29,8 +29,7 @@ const ListItem = React.forwardRef<
           {...props}
           ref={ref}
           onSave={handleSave}
-          title={itemProps.title}
-          url={itemProps.url}
+          item={itemProps.item}
         />
       ) : (
         <ListItemView
@@ -38,8 +37,7 @@ const ListItem = React.forwardRef<
           {...props}
           ref={ref}
           onEdit={() => setIsEditing(true)}
-          title={itemProps.title}
-          url={itemProps.url}
+          item={itemProps.item}
         />
       )}
     </>
@@ -55,15 +53,15 @@ type ListItemViewProps = {
 const ListItemView = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & ListItemViewProps & ListItemProps
->(({ title, url, onEdit, className, ...props }, ref) => {
+>(({ item, onEdit, className, ...props }, ref) => {
   return (
     <div
       className={cn("flex gap-4 items-center", className)}
       {...props}
       ref={ref}
     >
-      <p className="overflow-ellipsis text-nowrap flex-grow">{title}</p>
-      <a href={url} target="_blank">
+      <p className="overflow-ellipsis text-nowrap flex-grow">{item.title}</p>
+      <a href={item.url} target="_blank">
         <Button size="icon" variant="ghost">
           <Link />
         </Button>
@@ -78,23 +76,29 @@ const ListItemView = React.forwardRef<
 ListItemView.displayName = "ListItemView"
 
 type ListItemEditorProps = {
-  onSave: (title: undefined | string, url: undefined | string) => void
+  onSave: (item: Item) => void
 }
 
 const ListItemEditor = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & ListItemEditorProps & ListItemProps
->(({ title, url, onSave, className, ...props }, ref) => {
+>(({ item, onSave, className, ...props }, ref) => {
   const titleRef = useRef<HTMLInputElement>(null)
   const urlRef = useRef<HTMLInputElement>(null)
 
   return (
     <div className={cn("flex gap-4", className)} {...props} ref={ref}>
-      <Input placeholder="Title" defaultValue={title} ref={titleRef} />
-      <Input placeholder="Video URL" defaultValue={url} ref={urlRef} />
+      <Input placeholder="Title" defaultValue={item.title} ref={titleRef} />
+      <Input placeholder="Video URL" defaultValue={item.url} ref={urlRef} />
       <Button
         size="icon"
-        onClick={() => onSave(titleRef.current?.value, urlRef.current?.value)}
+        onClick={() =>
+          onSave({
+            title: titleRef.current?.value,
+            url: urlRef.current?.value,
+            id: item.id,
+          })
+        }
       >
         <Check />
       </Button>
