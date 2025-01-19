@@ -1,5 +1,5 @@
 export type Item = {
   id: string
   title?: string
-  url?: string
+  videoId?: string
 }

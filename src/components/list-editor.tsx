@@ -46,12 +46,11 @@ const ListEditor = React.forwardRef<
   }
 
   const itemsView = items.map((item, i) => (
-    <div className="w-full flex items-center gap-4">
+    <div key={item.id} className="w-full flex items-center gap-4">
       <p className="font-bold text-muted-foreground opacity-50">
         {i + 1 + "."}
       </p>
       <ListItem
-        key={item.id}
         className="w-full grow"
         item={item}
         onDelete={handleDelete}

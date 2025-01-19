@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import React, { useRef, useState } from "react"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import { Check, Edit, Link, Trash } from "lucide-react"
+import { Check, Edit, Trash } from "lucide-react"
 import { Item } from "@/lib/types"
 
 type ListItemProps = {
@@ -17,9 +17,9 @@ const ListItem = React.forwardRef<
 >(({ item, onDelete, onUpdate, className, ...props }, ref) => {
   const [isEditing, setIsEditing] = useState(
     item.title === undefined ||
-      item.url === undefined ||
+      item.videoId === undefined ||
       item.title === "" ||
-      item.url === "",
+      item.videoId === "",
   )
 
   function handleUpdate(item: Item) {
@@ -68,14 +68,23 @@ const ListItemView = React.forwardRef<
       {...props}
       ref={ref}
     >
-      <p className="overflow-ellipsis text-nowrap flex-grow overflow-hidden max-w-full">
-        {item.title}
-      </p>
-      <a href={item.url} target="_blank">
-        <Button size="icon" variant="ghost">
-          <Link />
-        </Button>
-      </a>
+      <div className="flex gap-4 flex-grow items-center min-w-0">
+        {item.videoId !== "" && item.videoId !== undefined && (
+          <a
+            href={`https://www.youtube.com/watch?v=${item.videoId}`}
+            target="_blank"
+          >
+            <img
+              src={`https://img.youtube.com/vi/${item.videoId}/1.jpg`}
+              alt=""
+              className="object-cover h-9 aspect-square rounded-sm"
+            />
+          </a>
+        )}
+        <p className="overflow-ellipsis text-nowrap flex-grow overflow-hidden max-w-full min-w-0">
+          {item.title}
+        </p>
+      </div>
       <Button size="icon" onClick={onEdit}>
         <Edit />
       </Button>
@@ -96,26 +105,30 @@ const ListItemEditor = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & ListItemEditorProps
 >(({ item, onDelete, onUpdate, className, ...props }, ref) => {
   const titleRef = useRef<HTMLInputElement>(null)
-  const urlRef = useRef<HTMLInputElement>(null)
+  const videoIdRef = useRef<HTMLInputElement>(null)
 
   return (
     <div className={cn("flex gap-4", className)} {...props} ref={ref}>
       <Input placeholder="Title" defaultValue={item.title} ref={titleRef} />
-      <Input placeholder="Video URL" defaultValue={item.url} ref={urlRef} />
+      <Input
+        placeholder="Video ID"
+        defaultValue={item.videoId}
+        ref={videoIdRef}
+      />
+      <Button size="icon" variant="ghost" onClick={() => onDelete(item)}>
+        <Trash />
+      </Button>
       <Button
         size="icon"
         onClick={() =>
           onUpdate({
             title: titleRef.current?.value,
-            url: urlRef.current?.value,
+            videoId: videoIdRef.current?.value,
             id: item.id,
           })
         }
       >
         <Check />
-      </Button>
-      <Button size="icon" variant="destructive" onClick={() => onDelete(item)}>
-        <Trash />
       </Button>
     </div>
   )
