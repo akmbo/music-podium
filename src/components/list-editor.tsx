@@ -1,19 +1,28 @@
 import { cn } from "@/lib/utils"
-import { Plus } from "lucide-react"
-import React, { useState } from "react"
+import { Delete, Plus } from "lucide-react"
+import React, { useEffect, useState } from "react"
 import { ListItem } from "./list-item"
 import { Button } from "./ui/button"
 import { Item } from "@/lib/types"
+
+const defaultItems: Item[] = [
+  { id: String(Date.now() - 3) },
+  { id: String(Date.now() - 2) },
+  { id: String(Date.now() - 1) },
+]
 
 const ListEditor = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [items, setItems] = useState<Item[]>([
-    { id: String(Date.now() - 3) },
-    { id: String(Date.now() - 2) },
-    { id: String(Date.now() - 1) },
-  ])
+  const [items, setItems] = useState<Item[]>(() => {
+    const savedItems = localStorage.getItem("items")
+    return savedItems ? JSON.parse(savedItems) : [...defaultItems]
+  })
+
+  useEffect(() => {
+    localStorage.setItem("items", JSON.stringify(items))
+  }, [items])
 
   function handleDelete(deletedItem: Item) {
     setItems((prevItems) =>
@@ -30,6 +39,10 @@ const ListEditor = React.forwardRef<
         return item
       }),
     )
+  }
+
+  function handleReset() {
+    setItems(() => [...defaultItems])
   }
 
   const itemsView = items.map((item) => (
@@ -53,10 +66,20 @@ const ListEditor = React.forwardRef<
       ref={ref}
     >
       {itemsView}
-      <Button className="flex gap-1 mt-6" onClick={handleItemAdd}>
-        <Plus />
-        <span>Add</span>
-      </Button>
+      <div className="relative flex items-center justify-center w-full">
+        <Button className="flex gap-1 mt-6" onClick={handleItemAdd}>
+          <Plus />
+          <span>Add</span>
+        </Button>
+        <Button
+          className="flex gap-1 mt-6 absolute right-0"
+          onClick={handleReset}
+          variant="ghost"
+        >
+          <Delete />
+          <span>Reset</span>
+        </Button>
+      </div>
     </div>
   )
 })

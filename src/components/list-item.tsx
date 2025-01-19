@@ -15,7 +15,12 @@ const ListItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & ListItemProps
 >(({ item, onDelete, onUpdate, className, ...props }, ref) => {
-  const [isEditing, setIsEditing] = useState(true)
+  const [isEditing, setIsEditing] = useState(
+    item.title === undefined ||
+      item.url === undefined ||
+      item.title === "" ||
+      item.url === "",
+  )
 
   function handleUpdate(item: Item) {
     onUpdate(item)
