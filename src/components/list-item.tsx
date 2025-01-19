@@ -7,18 +7,19 @@ import { Item } from "@/lib/types"
 
 type ListItemProps = {
   item: Item
+  onDelete: (item: Item) => void
+  onUpdate: (item: Item) => void
 }
 
 const ListItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & ListItemProps
->(({ item, className, ...props }, ref) => {
+>(({ item, onDelete, onUpdate, className, ...props }, ref) => {
   const [isEditing, setIsEditing] = useState(true)
-  const [itemProps, setItemProps] = useState<ListItemProps>({ item })
 
-  function handleSave(item: Item) {
+  function handleUpdate(item: Item) {
+    onUpdate(item)
     setIsEditing(false)
-    setItemProps({ item })
   }
 
   return (
@@ -28,8 +29,9 @@ const ListItem = React.forwardRef<
           className={cn("w-[256px]", className)}
           {...props}
           ref={ref}
-          onSave={handleSave}
-          item={itemProps.item}
+          onUpdate={handleUpdate}
+          onDelete={() => onDelete(item)}
+          item={item}
         />
       ) : (
         <ListItemView
@@ -37,7 +39,7 @@ const ListItem = React.forwardRef<
           {...props}
           ref={ref}
           onEdit={() => setIsEditing(true)}
-          item={itemProps.item}
+          item={item}
         />
       )}
     </>
@@ -47,12 +49,13 @@ const ListItem = React.forwardRef<
 ListItem.displayName = "ListItem"
 
 type ListItemViewProps = {
+  item: Item
   onEdit: () => void
 }
 
 const ListItemView = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & ListItemViewProps & ListItemProps
+  React.HTMLAttributes<HTMLDivElement> & ListItemViewProps
 >(({ item, onEdit, className, ...props }, ref) => {
   return (
     <div
@@ -76,13 +79,15 @@ const ListItemView = React.forwardRef<
 ListItemView.displayName = "ListItemView"
 
 type ListItemEditorProps = {
-  onSave: (item: Item) => void
+  item: Item
+  onDelete: (item: Item) => void
+  onUpdate: (item: Item) => void
 }
 
 const ListItemEditor = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & ListItemEditorProps & ListItemProps
->(({ item, onSave, className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & ListItemEditorProps
+>(({ item, onDelete, onUpdate, className, ...props }, ref) => {
   const titleRef = useRef<HTMLInputElement>(null)
   const urlRef = useRef<HTMLInputElement>(null)
 
@@ -93,7 +98,7 @@ const ListItemEditor = React.forwardRef<
       <Button
         size="icon"
         onClick={() =>
-          onSave({
+          onUpdate({
             title: titleRef.current?.value,
             url: urlRef.current?.value,
             id: item.id,
@@ -102,7 +107,7 @@ const ListItemEditor = React.forwardRef<
       >
         <Check />
       </Button>
-      <Button size="icon" variant="destructive">
+      <Button size="icon" variant="destructive" onClick={() => onDelete(item)}>
         <Trash />
       </Button>
     </div>
