@@ -2,6 +2,7 @@ import { Medal } from "lucide-react"
 import { ListEditor } from "./components/list-editor"
 import { Item } from "./lib/types"
 import { useEffect, useState } from "react"
+import { Comparison } from "./components/comparison"
 
 const defaultItems: Item[] = [
   { id: String(Date.now() - 3) },
@@ -44,6 +45,10 @@ function App() {
     setItems((prevItems) => [...prevItems, { id: String(Date.now()) }])
   }
 
+  function handleChoice(item: Item) {
+    console.log(item.title)
+  }
+
   return (
     <div className="flex place-items-center min-w-full my-24 space-y-16 flex-col px-12">
       <div className="flex justify-center items-center gap-4">
@@ -60,6 +65,7 @@ function App() {
         onReset={handleReset}
         onUpdate={handleUpdate}
       />
+      <Comparison item1={items[0]} item2={items[1]} onChoice={handleChoice} />
     </div>
   )
 }
